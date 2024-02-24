@@ -38,27 +38,27 @@ def parse_args():
 
 
 def get_soft_scores_and_true_labels(dataset, model):
-    """Return the soft scores and ground truth labels for the dataset.
+    model.to(device)  # Ensure model is on the correct device
+    dataloader = DataLoader(dataset, batch_size=32, shuffle=False)
 
-    Loop through the dataset (in batches), log the model's soft scores for
-    all samples in two iterables: all_first_soft_scores and
-    all_second_soft_scores. Log the corresponding ground truth labels in
-    gt_labels.
+    all_first_soft_scores = []
+    all_second_soft_scores = []
+    gt_labels = []
 
-    Args:
-        dataset: the test dataset to scan.
-        model: the model used to compute the prediction.
+    with torch.no_grad():  # Disable gradient computation
+        for inputs, labels in dataloader:
+            inputs = inputs.to(device)
+            outputs = model(inputs)  # Forward pass
 
-    Returns:
-        (all_first_soft_scores, all_second_soft_scores, gt_labels):
-        all_first_soft_scores: an iterable holding the model's first
-        inference result on the images in the dataset (data in index = 0).
-        all_second_soft_scores: an iterable holding the model's second
-        inference result on the images in the dataset (data in index = 1).
-        gt_labels: an iterable holding the samples' ground truth labels.
-    """
-    """INSERT YOUR CODE HERE, overrun return."""
-    return torch.rand(100, ), torch.rand(100, ), torch.randint(0, 2, (100, ))
+            # Softmax to convert outputs to probabilities
+            probabilities = torch.softmax(outputs, dim=1)
+
+            # Split probabilities into "real" and "fake/synthetic" scores
+            all_first_soft_scores.extend(probabilities[:, 0].cpu().numpy())
+            all_second_soft_scores.extend(probabilities[:, 1].cpu().numpy())
+            gt_labels.extend(labels.cpu().numpy())
+
+    return all_first_soft_scores, all_second_soft_scores, gt_labels
 
 
 def plot_roc_curve(roc_curve_figure,
