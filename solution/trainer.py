@@ -123,6 +123,26 @@ class Trainer:
 
         for batch_idx, (inputs, targets) in enumerate(dataloader):
             """INSERT YOUR CODE HERE."""
+            inputs, targets = inputs.to(device), targets.to(device)
+
+            # Disable gradient comutation for evaluation
+            with torch.no_grad():
+                # Forward pass
+                outputs = self.model(inputs)
+
+                # Compute the loss
+                loss = self.criterion(outputs, targets)
+                total_loss += loss.item() * inputs.size(0)
+
+                #compute accuracy
+                _, predicted = torch.max(outputs.data, 1)
+                correct_labeled_samples += (predicted == targets).sum().item()
+                nof_samples += targets.size(0)
+
+                #calculate avg loss and accuracy for now
+                avg_loss = total_loss / nof_samples
+                accuracy = 100.0 * correct_labeled_samples / nof_samples
+
             if batch_idx % print_every == 0 or batch_idx == len(dataloader) - 1:
                 print(f'Epoch [{self.epoch:03d}] | Loss: {avg_loss:.3f} | '
                       f'Acc: {accuracy:.2f}[%] '
