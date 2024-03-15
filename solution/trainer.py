@@ -53,7 +53,7 @@ class Trainer:
         accuracy = 0
         nof_samples = 0
         correct_labeled_samples = 0
-        correct_predictions = 0 #TODO: check if we can init it here
+        correct_predictions = 0
         total_samples = 0
 
         train_dataloader = DataLoader(self.train_dataset,

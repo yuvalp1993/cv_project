@@ -10,6 +10,10 @@ from torch.utils.data import DataLoader
 
 from common import FIGURES_DIR
 from utils import load_dataset, load_model
+from pytorch_grad_cam import GradCAM
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.utils.image import show_cam_on_image
+
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -36,9 +40,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def get_grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
-                               model: torch.nn.Module) -> tuple[np.ndarray,
-                                                                torch.tensor]:
+def grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
+                               model: torch.nn.Module) -> tuple[np.ndarray, torch.tensor]:
     """Return a tuple with the GradCAM visualization and true class label.
 
     Args:
@@ -52,7 +55,6 @@ def get_grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
         of batch size 1, it's a tensor of shape (1,)).
     """
     """INSERT YOUR CODE HERE, overrun return."""
-    return np.random.rand(256, 256, 3), torch.randint(0, 2, (1,))
 
 
 def main():
