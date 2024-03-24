@@ -42,7 +42,6 @@ class FacesDataset(Dataset):
         # Apply the transform
         image = self.transform(image)
 
-
         return image, label
 
     def __len__(self):

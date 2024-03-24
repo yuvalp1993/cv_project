@@ -40,7 +40,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
+def get_grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
                                model: torch.nn.Module) -> tuple[np.ndarray, torch.tensor]:
     """Return a tuple with the GradCAM visualization and true class label.
 
@@ -55,6 +55,19 @@ def grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
         of batch size 1, it's a tensor of shape (1,)).
     """
     """INSERT YOUR CODE HERE, overrun return."""
+    dataloader = DataLoader(test_dataset, batch_size=1, shuffle=True)
+    data_iter = iter(dataloader)
+    image, label = next(data_iter)
+
+    cam = GradCAM(model=model, target_layers=[model.conv3])
+    grayscale_cam = cam(input_tensor = image)
+
+    grayscale_cam = grayscale_cam[0, :]
+    rgb_img = np.transpose(image[0, :, :].numpy(), (1,2,0))
+    rgb_img = (rgb_img - rgb_img.min()) / (rgb_img.max() - rgb_img.min())
+
+    visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb = True)
+    return visualization, label
 
 
 def main():

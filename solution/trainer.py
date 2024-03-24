@@ -125,7 +125,7 @@ class Trainer:
             """INSERT YOUR CODE HERE."""
             inputs, targets = inputs.to(device), targets.to(device)
 
-            # Disable gradient comutation for evaluation
+            # Disable gradient computation for evaluation
             with torch.no_grad():
                 # Forward pass
                 outputs = self.model(inputs)

@@ -63,16 +63,16 @@ def compute_gradient_saliency_maps(samples: torch.tensor,
     """
     """INSERT YOUR CODE HERE, overrun return."""
 
-    samples.requires_grad_() #(1)
+    samples.requires_grad = True #(1)
     output = model(samples) #(2)
 
-    output = output[:, true_labels] #(3)
-    output.sum().backward() #(4)
+    class_output = output.gather(1, true_labels.view(-1,1)).squeeze() #(3)
+    class_output.sum().backward() #(4)
 
-    gradients = samples.grad #(5)
-    grads = gradients.abs() #(6)
+    gradients = samples.grad.data #(5)
+    abs_gradients = gradients.abs() #(6)
 
-    saliency = grads.max(dim=1)[0] #(7)
+    saliency = abs_gradients.max(dim=1)[0] #(7)
     return saliency
 
 
