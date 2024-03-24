@@ -55,18 +55,22 @@ def get_grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
         of batch size 1, it's a tensor of shape (1,)).
     """
     """INSERT YOUR CODE HERE, overrun return."""
-    dataloader = DataLoader(test_dataset, batch_size=1, shuffle=True)
-    data_iter = iter(dataloader)
-    image, label = next(data_iter)
 
-    cam = GradCAM(model=model, target_layers=[model.conv3])
-    grayscale_cam = cam(input_tensor = image)
+    # Load a single image and its label from the dataset in random order
+    data_loader = DataLoader(test_dataset, batch_size=1, shuffle=True)
+    image, label = next(iter(data_loader))
 
-    grayscale_cam = grayscale_cam[0, :]
-    rgb_img = np.transpose(image[0, :, :].numpy(), (1,2,0))
-    rgb_img = (rgb_img - rgb_img.min()) / (rgb_img.max() - rgb_img.min())
+    # Initialize Grad_CAM with the target layer
+    grad_cam = GradCAM(model=model, target_layers=[model.conv3])
 
-    visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb = True)
+    # Grad-Cam output for the image
+    cam_output = grad_cam(input_tensor = image)[0]
+
+    # Adjust image tensor for RGB format and normalize pixel values
+    org_img = np.transpose(image.squeeze().numpy(), (1,2,0))
+    org_img = (org_img - np.min(org_img)) / (np.max(org_img) - np.min(org_img))
+
+    visualization = show_cam_on_image(org_img, cam_output, use_rgb = True)
     return visualization, label
 
 
